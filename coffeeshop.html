@@ -94,11 +94,10 @@ button_color.addEventListener('click', () => {
 
 
 <div class="player">
-    <div class="cover">🎵</div>
+    <!-- <div class="cover">🎵</div> -->
 
     <div class="info">
-        <h3 id="title">Song Title</h3>
-        <p id="artist">Artist Name</p>
+        <p id="title">Song Title</p> <p id="artist">Artist Name</p>
 
         <input type="range" id="progress" value="0">
 
@@ -130,12 +129,16 @@ button_color.addEventListener('click', () => {
 }*/
 
 .player{
-    width:330px;
+    margin-left: 20%;
+    width:450px;
+    height: 150px;
     background:#1d1d1d;
     color:#fff;
     display:flex;
-    gap:15px;
-    padding:15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap:5px;
+    padding: 5px;
     border-radius:15px;
     box-shadow:0 10px 25px rgba(0,0,0,.4);
 }
@@ -155,15 +158,6 @@ button_color.addEventListener('click', () => {
     flex:1;
 }
 
-h3{
-    font-size:18px;
-}
-
-p{
-    color:#aaa;
-    margin:4px 0 10px;
-    font-size:14px;
-}
 
 #progress{
     width:100%;
@@ -196,7 +190,7 @@ p{
 {
     title:"Houdou Nisbi",
     artist:"Ziad Rahbani",
-    src:"music/hodou_nisbi.mp3"
+    src:"music/houdou_nisbi.mp3"
 },
 {
     title:"Sparks",

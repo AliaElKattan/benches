@@ -1,0 +1,23 @@
+{
+  "name": "benches",
+  "version": "1.0.0",
+  "description": "html play",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:AliaElKattan/benches.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "https://aliaelkattan.github.io/benches",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
