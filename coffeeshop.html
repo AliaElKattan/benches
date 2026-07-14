@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- 
+      This is an HTML comment
+      You can write text in a comment and the content won't be visible in the page
+    -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      This is the page head - it contains info the browser uses
+      Like the title, which appears on the browser tab but not inside the page
+      Further down you'll see the content that displays in the page
+    -->
+    <title>qahwah</title>
+
+    <!-- The website stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.min.js"></script>
+<!-- <script src="yourScript.js"></script> -->
+
+
+  </head>
+
+        <!-- Option 1 (simplest, no customization) -->
+    <script type="module">
+      import { playhtml } from "https://unpkg.com/playhtml@latest";
+
+      // Initialize with cursor tracking
+      playhtml.init({
+        cursors: {
+          enabled: true,
+          room: "page"
+        }
+      });
+
+      // Make playhtml available globally for script.js
+      window.playhtml = playhtml;
+
+
+      // select the button element by its ID
+const button = document.getElementById('my-button');
+
+// add an event listener to the button that listens for a click event
+button.addEventListener('click', () => {
+  // when the button is clicked, show an alert message
+  alert('Button clicked!');
+  // you can also change the button's text or style here if you want
+  button.textContent = 'Clicked!';
+  // change the button's css style
+  button.style.backgroundColor = 'red';
+});
+
+const rectangle = document.getElementById('color-rect');
+const button_color = document.getElementById('color-btn');
+button_color.addEventListener('click', () => {
+  // change the style locally; can-mirror syncs it to everyone
+  const hue = Math.floor(Math.random() * 360);
+  rectangle.style.background = `hsl(${hue}, 80%, 70%)`;
+});
+
+
+
+    </script>
+
+
+  <body>
+
+<div can-play id="visit-counter">
+  <button type="button">check in</button>
+  <p><span class="count">0</span> people have checked in</p>
+</div>
+<script>
+  const visitCounter = document.getElementById('visit-counter');
+
+  // 1. the data this element stores, and what it starts as
+  visitCounter.defaultData = { count: 0 };
+
+  // 2. how that data turns into what people see
+  visitCounter.updateElement = ({ element, data }) => {
+    element.querySelector('.count').textContent = data.count;
+  };
+
+  // 3. bump the count when someone clicks the button
+  visitCounter.onClick = (event, { setData }) => {
+    setData((data) => {
+      data.count += 1;
+    });
+  };
+</script>
+
+
+<div class="player">
+    <div class="cover">🎵</div>
+
+    <div class="info">
+        <h3 id="title">Song Title</h3>
+        <p id="artist">Artist Name</p>
+
+        <input type="range" id="progress" value="0">
+
+        <div class="controls">
+            <button class="player-button" id="prev">⏮</button>
+            <button class="player-button" id="play">▶</button>
+            <button class="player-button" id="next">⏭</button>
+        </div>
+    </div>
+
+    <audio id="audio"></audio>
+</div>
+
+<style>
+
+/**{*/
+/*    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;*/
+/*}*/
+
+/*body{
+    background:#111;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}*/
+
+.player{
+    width:330px;
+    background:#1d1d1d;
+    color:#fff;
+    display:flex;
+    gap:15px;
+    padding:15px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+
+.cover{
+    width:70px;
+    height:70px;
+    background:#333;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:35px;
+}
+
+.info{
+    flex:1;
+}
+
+h3{
+    font-size:18px;
+}
+
+p{
+    color:#aaa;
+    margin:4px 0 10px;
+    font-size:14px;
+}
+
+#progress{
+    width:100%;
+    accent-color:#1db954;
+}
+
+.controls{
+    margin-top:10px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+.player-button button{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:50%;
+    background:#1db954;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.player-button button:hover{
+    transform:scale(1.08);
+}
+</style>
+<script> const songs = [
+{
+    title:"Houdou Nisbi",
+    artist:"Ziad Rahbani",
+    src:"music/hodou_nisbi.mp3"
+},
+{
+    title:"Sparks",
+    artist:"Coldplay",
+    src:"music/sparks_coldplay.mp3"
+},
+{
+    title:"Fady Shewaya",
+    artist:"Hamza Namira",
+    src:"music/fady_shewaya.mp3"
+}
+];
+
+const audio = document.getElementById("audio");
+const title = document.getElementById("title");
+const artist = document.getElementById("artist");
+const playBtn = document.getElementById("play");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+const progress = document.getElementById("progress");
+
+let index = 0;
+let playing = false;
+
+function loadSong(song){
+    title.textContent = song.title;
+    artist.textContent = song.artist;
+    audio.src = song.src;
+}
+
+loadSong(songs[index]);
+
+playBtn.onclick = () => {
+    if(playing){
+        audio.pause();
+        playBtn.textContent = "▶";
+    }else{
+        audio.play();
+        playBtn.textContent = "⏸";
+    }
+    playing = !playing;
+};
+
+nextBtn.onclick = () => {
+    index = (index + 1) % songs.length;
+    loadSong(songs[index]);
+    audio.play();
+    playing = true;
+    playBtn.textContent = "⏸";
+};
+
+prevBtn.onclick = () => {
+    index = (index - 1 + songs.length) % songs.length;
+    loadSong(songs[index]);
+    audio.play();
+    playing = true;
+    playBtn.textContent = "⏸";
+};
+
+audio.addEventListener("timeupdate", () => {
+    progress.max = audio.duration || 0;
+    progress.value = audio.currentTime;
+});
+
+progress.addEventListener("input", () => {
+    audio.currentTime = progress.value;
+});
+
+audio.addEventListener("ended", () => {
+    nextBtn.click();
+});</script>
+
+
+<div class="board-container">
+
+    <div class="board">
+        <img class="wood" src="images/dark_wood.jpg" alt="">
+        <img class="overlay" id="chess" src="images/board.png"  can-move alt="">
+    </div>
+
+        <div class="board">
+        <img class="wood" src="images/dark_wood.jpg" alt="">
+        <textarea can-mirror id="text-area" class="overlay" rows="4"></textarea>
+        <!-- <img class="overlay" id="board-3" src="images/board.png"  can-move alt=""> -->
+    </div>
+
+
+    <div class="board">
+        <img class="wood" src="images/dark_wood.jpg" alt="">
+        <img class="overlay" id="backgammon" src="images/backgammon.png"  can-move alt="">
+    </div>
+
+
+    <div class="board">
+        <img class="wood" src="images/dark_wood.jpg" alt="">
+        <!-- <img class="overlay"  id="board-4" src="images/board.png" can-move alt=""> -->
+        <div id="paintBox" class="overlay" can-mirror></div>
+    </div>
+
+    <div class="board">
+        <img class="wood" src="images/dark_wood.jpg" alt="">
+        <img class="overlay" id="board-5" src="images/board.png"  can-move alt="">
+    </div>
+
+ <div class="board">
+        <img class="wood" src="images/dark_wood.jpg" alt="">
+        <!-- <textarea can-mirror id="text-area" class="overlay" rows="4"></textarea> -->
+
+        <style>
+  @keyframes zone-spin {
+    to {
+      transform: rotate(360deg) scale(3);
+    }
+  }
+  #hover-zone.celebrate {
+    animation: zone-spin 0.9s ease-in-out;
+  }
+</style>
+<div class="overlay" can-play id="hover-zone">
+  <p>hover table</p>
+  <p><span class="count">0</span>/3 hovering</p>
+</div>
+<script>
+  const zone = document.getElementById('hover-zone');
+
+  // each visitor only tracks their own hover state (presence, not saved)
+  zone.defaultData = {};
+  zone.myDefaultAwareness = { hovering: false };
+
+  // no saved data to render, but can-play still needs an updateElement
+  zone.updateElement = () => {};
+
+  zone.onMount = ({ getElement, setMyAwareness }) => {
+    const el = getElement();
+    el.addEventListener('mouseenter', () => setMyAwareness({ hovering: true }));
+    el.addEventListener('mouseleave', () =>
+      setMyAwareness({ hovering: false }),
+    );
+  };
+
+  let wasBelow = true; // only fire as we *cross* the threshold, not every tick
+  zone.updateElementAwareness = ({ element, awareness }) => {
+    const hovering = awareness.filter((a) => a?.hovering).length;
+    element.querySelector('.count').textContent = hovering;
+    if (hovering >= 3 && wasBelow) {
+      playhtml.dispatchPlayEvent({ type: 'zone-celebrate' });
+    }
+    wasBelow = hovering < 3;
+  };
+
+  // an event is a one-off broadcast: everyone present runs this once
+  playhtml.registerPlayEventListener('zone-celebrate', {
+    onEvent: () => {
+      zone.classList.add('celebrate');
+      zone.addEventListener(
+        'animationend',
+        () => zone.classList.remove('celebrate'),
+        { once: true },
+      );
+    },
+  });
+</script>
+
+  
+        <!-- <img class="overlay" id="board-3" src="images/board.png"  can-move alt=""> -->
+    </div>
+</div>
+
+<script>
+const sketch = (p) => {
+
+    let brushColor;
+
+    p.setup = function () {
+        const canvas = p.createCanvas(180, 180);
+        canvas.parent("paintBox");
+
+        p.background(255);
+
+        // Pick a random color once when the page loads
+        brushColor = p.color(
+            p.random(255),
+            p.random(255),
+            p.random(255)
+        );
+    };
+
+    p.draw = function () {
+        if (p.mouseIsPressed &&
+            p.mouseX >= 0 && p.mouseX < p.width &&
+            p.mouseY >= 0 && p.mouseY < p.height) {
+
+            p.noStroke();
+            p.fill(brushColor);
+            p.circle(p.mouseX, p.mouseY, 12);
+        }
+    };
+
+};
+
+new p5(sketch);
+
+</script>
+
+
+<!-- maybe something about making music collaboratively? -->
+
+<!-- instrument -->
+
+<!-- <img src="images/piano.png" width="270" height="220" style="margin-left: 10%; margin-top: 1%;" can-move/>  -->
+
+<!-- instrument -->
+
+<!-- <img src="images/drum.png" width="270" height="220" style="margin-left: 10%; margin-top: 1%;" can-move/>  -->
+
+<!-- instrument -->
+
+<!-- <img src="images/guitar.png" width="270" height="220" style="margin-left: 10%; margin-top: 1%;" can-move/>  -->
+
+<!-- you click to turn on and off, move to... what? maybe frequency, speed. maybe text or button for something  -->
+
+<!-- <button id="my-button">Click me!!</button> -->
+
+<!-- <textarea can-mirror id="text-area" rows="4"></textarea> -->
+
+<!-- <div can-mirror id="color-rect"></div> -->
+<!-- <button id="color-btn">random color</button> -->
+
+
+
+
+<!-- <img src="images/football.png" width="50" height="50" can-move>  -->
+        
+        
+
+
+    <!-- The website JavaScript file -->
+    <!-- <script src="script.js" defer></script> -->
+  </body>
+</html>
