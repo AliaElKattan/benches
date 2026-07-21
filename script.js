@@ -18,67 +18,146 @@ if (btn) {
  * PLAYHTML SETUP
  */
 
-function shootStar() {
-  window.playhtml.dispatchPlayEvent({ type: "shootingStar" });
-}
 
-window.playhtml.registerPlayEventListener("shootingStar", {
-  onEvent: (data) => {
-    document
-      .getElementById("shootingStar")
-      .animate(
-        [
-          { transform: "translate(100vw, 100vh) rotate(0deg)" },
-          { transform: "translate(-10vw, -10vh) rotate(360deg)" },
-        ],
-        {
-          duration: 2000,
-          fill: "forwards",
+playhtml.define("can-audio", {
+    defaultData: {
+        playing: false,
+        position: 0
+    },
+
+    view({ element, data, setData }) {
+        const audio = element.querySelector("#audio");
+        const button = element.querySelector("#playBtn");
+        const status = element.querySelector("#status");
+
+        // Render state
+        if (data.playing) {
+            audio.play();
+            button.textContent = "❚❚";
+            status.textContent = "Playing";
+        } else {
+            audio.pause();
+            button.textContent = "▶";
+            status.textContent = "Paused";
         }
-      );
-  },
+
+        if (Math.abs(audio.currentTime - data.position) > 0.25) {
+            audio.currentTime = data.position;
+        }
+
+        // User interaction
+        button.onclick = () => {
+            setData({
+                playing: audio.paused,
+                position: audio.currentTime
+            });
+        };
+
+        // Keep position synced
+        audio.ontimeupdate = () => {
+            if (!audio.paused) {
+                setData({
+                    playing: true,
+                    position: audio.currentTime
+                });
+            }
+        };
+    }
 });
 
-function addGuestbook() {
-  const message = document.getElementById("guestbookValue").value;
-  if (!message) {
-    alert("no message!");
-    return;
-  }
-  const newMessage = document.createElement("li");
 
-  newMessage.textContent = message;
-  newMessage.setAttribute("can-move", "");
-  playhtml.setupPlayElement(newMessage);
-  document.getElementById("guestbook").appendChild(newMessage);
-}
+  const zone = document.getElementById('hover-zone');
+
+  // each visitor only tracks their own hover state (presence, not saved)
+  zone.defaultData = {};
+  zone.myDefaultAwareness = { hovering: false };
+
+  // no saved data to render, but can-play still needs an updateElement
+  zone.updateElement = () => {};
+
+  zone.onMount = ({ getElement, setMyAwareness }) => {
+    const el = getElement();
+    el.addEventListener('mouseenter', () => setMyAwareness({ hovering: true }));
+    el.addEventListener('mouseleave', () =>
+      setMyAwareness({ hovering: false }),
+    );
+  };
+
+  let wasBelow = true; // only fire as we *cross* the threshold, not every tick
+  zone.updateElementAwareness = ({ element, awareness }) => {
+    const hovering = awareness.filter((a) => a?.hovering).length;
+    element.querySelector('.count').textContent = hovering;
+    if (hovering >= 3 && wasBelow) {
+      playhtml.dispatchPlayEvent({ type: 'zone-celebrate' });
+    }
+    wasBelow = hovering < 3;
+  };
+
+  // an event is a one-off broadcast: everyone present runs this once
+  playhtml.registerPlayEventListener('zone-celebrate', {
+    onEvent: () => {
+      zone.classList.add('celebrate');
+      zone.addEventListener(
+        'animationend',
+        () => zone.classList.remove('celebrate'),
+        { once: true },
+      );
+    },
+  });
+
+
+
+
+// button.addEventListener("click", async () => {
+//     if (audio.paused) {
+//         try {
+//             await audio.play();
+//             button.textContent = "❚❚";
+//             status.textContent = "Playing";
+//         } catch (err) {
+//             console.error(err);
+//         }
+//     } else {
+//         audio.pause();
+//         button.textContent = "▶";
+//         status.textContent = "Paused";
+//     }
+// });
+
+// audio.addEventListener("ended", () => {
+//     button.textContent = "▶";
+//     status.textContent = "Finished";
+// });
+
+
+
 
 // Reaction button setup
-window.playhtml.setupCustomElement({
-  selector: "#reactionBtn",
-  defaultData: { count: 0 },
-  onClick: (element, data, setData) => {
-    const hasReacted = Boolean(localStorage.getItem("reacted-reaction"));
+// window.playhtml.setupCustomElement({
+//   selector: "#reactionBtn",
+//   defaultData: { count: 0 },
+//   onClick: (element, data, setData) => {
+//     const hasReacted = Boolean(localStorage.getItem("reacted-reaction"));
 
-    if (hasReacted) {
-      setData({ count: data.count - 1 });
-      localStorage.removeItem("reacted-reaction");
-      element.classList.remove("reacted");
-    } else {
-      setData({ count: data.count + 1 });
-      localStorage.setItem("reacted-reaction", "true");
-      element.classList.add("reacted");
-    }
-  },
-  onUpdate: (element, data) => {
-    document.getElementById("reactionCount").textContent = data.count;
-  },
-  onMount: (element, data) => {
-    // Set initial state based on localStorage
-    const hasReacted = Boolean(localStorage.getItem("reacted-reaction"));
-    if (hasReacted) {
-      element.classList.add("reacted");
-    }
-    document.getElementById("reactionCount").textContent = data.count;
-  }
-});
+//     if (hasReacted) {
+//       setData({ count: data.count - 1 });
+//       localStorage.removeItem("reacted-reaction");
+//       element.classList.remove("reacted");
+//     } else {
+//       setData({ count: data.count + 1 });
+//       localStorage.setItem("reacted-reaction", "true");
+//       element.classList.add("reacted");
+//     }
+//   },
+//   onUpdate: (element, data) => {
+//     document.getElementById("reactionCount").textContent = data.count;
+//   },
+//   onMount: (element, data) => {
+//     // Set initial state based on localStorage
+//     const hasReacted = Boolean(localStorage.getItem("reacted-reaction"));
+//     if (hasReacted) {
+//       element.classList.add("reacted");
+//     }
+//     document.getElementById("reactionCount").textContent = data.count;
+//   }
+// });

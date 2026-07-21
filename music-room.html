@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- 
+      This is an HTML comment
+      You can write text in a comment and the content won't be visible in the page
+    -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      This is the page head - it contains info the browser uses
+      Like the title, which appears on the browser tab but not inside the page
+      Further down you'll see the content that displays in the page
+    -->
+    <title>music room</title>
+
+    <!-- The website stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body can-toggle>
+    <!--
+      The body includes the content you see in the page
+      Each element is defined using tags, like this <div></div>
+      The attributes like class="wrapper" let us style elements in the CSS
+    -->
+    <div class="wrapper">
+      <div class="content" role="main">
+
+        <h1 class="title" id="title">Efkar Music Room</h1>
+                <img
+          src="images/record.png"
+          class="illustration"
+          alt="Editor illustration"
+          title="Click the image!"
+             id="illustration"
+             can-spin
+        />
+
+
+<div class="player" can-audio>
+
+    <button id="playBtn">▶</button>
+
+    <div class="info">
+        <div class="song-title">Two Horses - Black Country, New Road</div>
+        <div id="status">Paused</div>
+    </div>
+
+    <audio id="audio" preload="auto">
+        <source src="music/two_horses.mp3" type="audio/mp3">
+    </audio>
+
+</div>
+
+
+
+        <div class="instructions">
+          
+
+          <img src="images/lamp.png"
+               style="width: 200px; position: absolute; top:0; right: -16px"
+               id="lamp" can-toggle />
+
+
+        </div>
+      </div>
+
+      <br/>
+
+      <br/>
+
+ 
+
+
+<div can-play id="hover-zone">
+  <p>hover here together</p>
+  <p><span class="count">0</span>/3 hovering</p>
+</div>
+
+
+  <textarea can-mirror id="text-area" rows="4"></textarea>
+
+
+
+        <br/>
+
+
+
+    </div>
+
+
+
+        <!-- Option 1 (simplest, no customization) -->
+    <script type="module">
+      import { playhtml } from "https://unpkg.com/playhtml@latest";
+
+      // Initialize with cursor tracking
+      playhtml.init({
+        cursors: {
+          enabled: true,
+          room: "page"
+        }
+      });
+
+      // Make playhtml available globally for script.js
+      window.playhtml = playhtml;
+    </script>
+    <!-- The website JavaScript file -->
+    <script src="script.js" defer></script>
+  </body>
+</html>

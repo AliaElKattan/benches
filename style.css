@@ -1,12 +1,16 @@
 /* Our default values set as CSS variables */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist+Pixel&display=swap');
+
+
 :root {
-  --color-bg: #3d4922;
+  --color-bg: #c3f4a8;
 
   --color-primary: #ffff00;
   --wrapper-height: 87vh;
   --image-max-width: 300px;
   --image-margin: 3rem;
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+/*  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;*/
   --font-family-header: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
@@ -25,8 +29,17 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+
 }
 
+.geist-pixel-font {
+  font-family: "Geist Pixel", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "ELSH" 0;
+}
 
 
 html, body {
@@ -37,10 +50,15 @@ html, body {
 
 
 body {
-  font-family: var(--font-family);
+/*  font-family: var(--font-family);*/
   background-color: var(--color-bg);
+    font-family: "Geist Pixel", sans-serif;
 }
 
+
+body.clicked {
+  background: #6cd97e;
+}
 
 
 .board-container {
@@ -99,6 +117,16 @@ body {
   text-align: center;
 }
 
+  @keyframes zone-spin {
+    to {
+      transform: rotate(360deg) scale(3);
+    }
+  }
+  #hover-zone.celebrate {
+    animation: zone-spin 0.9s ease-in-out;
+  }
+
+
 canvas {
     display: block;
 }
@@ -126,19 +154,57 @@ canvas {
 
 /* Very light scaling for our illustration */
 .title {
-  color: #2800ff;
-  font-family: var(--font-family);
+  color: #6d0e34;
+  font-family: "Geist Pixel", sans-serif;
   font-style: normal;
   font-weight: bold;
-  font-size: 100px;
+  font-size: 80px;
   line-height: 105%;
   margin: 0;
-  margin-top: 2em;
+  margin-top: 1em;
+}
+
+####
+.player{
+/*    display:flex;*/
+    align-items:center;
+    gap:16px;
+    background:#1f1f1f;
+    color:#fff;
+    padding:18px 24px;
+    border-radius:16px;
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+#playBtn {
+    width:2rem;
+    height:2rem;
+/*    border:none;*/
+border-radius: 10px;
+    background:#6d0e34;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+}
+
+#playBtn:hover{
+    filter:brightness(1.1);
+}
+
+.song-title{
+    font-size:18px;
+    font-weight:bold;
+}
+
+#status{
+    color:#aaa;
+    margin-top:4px;
+    font-size:14px;
 }
 
 /* Very light scaling for our illustration */
 .illustration {
-  max-width: 100%;
+  max-width: 20%;
   max-height: var(--image-max-width);
   margin-top: var(--image-margin);
 }
@@ -148,18 +214,65 @@ canvas {
   margin: 1rem auto 0;
 }
 
-/* Button - Add it from the README instructions */
-button,
-input {
-  font-family: inherit;
-  font-size: 100%;
-  background: #ffffff;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  transition: 500ms;
+
+#text-area {
+    width: 100%;
+/*    max-width: 200px;*/
+    min-height: 140px;
+
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.5;
+
+    color: #f5f5f5;
+    background: white;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+
+    resize: vertical;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
 }
+
+#text-area:focus {
+    border-color: #4a8cff;
+    box-shadow: 0 0 0 3px rgba(74, 140, 255, 0.2);
+}
+
+
+
+.player{
+    width:450px;
+    height: 75px;
+    background:#1d1d1d;
+    color:#fff;
+    display:flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap:5px;
+    padding: 5px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.4);
+    margin-top: 5%;
+}
+
+.cover{
+    width:70px;
+    height:70px;
+    background:#333;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:35px;
+}
+
+.info{
+    flex:1;
+}
+
+
 
 /* Subheading */
 h2 {

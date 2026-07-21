@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shared Music Player</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player {
+  background: #222;
+  width: 350px;
+  padding: 25px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.song-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+button {
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #555;
+}
+
+#progress {
+  width: 100%;
+}
+
+.time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #bbb;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+</style>
+
+</head>
+
+
+<body>
+
+<div class="player">
+
+  <div class="song-title" id="songName">
+    No song selected
+  </div>
+
+
+  <select id="playlist"></select>
+
+
+  <audio id="audio"></audio>
+
+
+  <input 
+    id="progress"
+    type="range"
+    min="0"
+    max="100"
+    value="0"
+  >
+
+
+  <div class="time">
+    <span id="current">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
+
+
+  <div class="controls">
+
+    <button id="previous">
+      ⏮
+    </button>
+
+    <button id="play">
+      ▶
+    </button>
+
+    <button id="next">
+      ⏭
+    </button>
+
+  </div>
+
+
+</div>
+
+
+<script>
+
+const songs = [
+  {
+    name: "Houdou Nisbi - Ziad Rahbani",
+    file: "music/houdou_nisbi.mp3"
+  },
+  {
+    name: "Fady Shewaya - Hamza Namira",
+    file: "music/fady_shewaya.mp3"
+  },
+  {
+    name: "Two Horses - Black Country, New Road",
+    file: "music/two_horses.mp3"
+  }
+];
+
+
+const audio = document.getElementById("audio");
+const playlist = document.getElementById("playlist");
+const songName = document.getElementById("songName");
+const playButton = document.getElementById("play");
+const progress = document.getElementById("progress");
+const current = document.getElementById("current");
+const duration = document.getElementById("duration");
+
+
+let currentSong = 0;
+
+
+// Populate playlist
+songs.forEach((song, i) => {
+  let option = document.createElement("option");
+  option.value = i;
+  option.textContent = song.name;
+  playlist.appendChild(option);
+});
+
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+
+  let minutes = Math.floor(seconds / 60);
+  let secs = Math.floor(seconds % 60);
+
+  return minutes + ":" + secs.toString().padStart(2, "0");
+}
+
+
+function loadSong(index) {
+
+  currentSong = index;
+
+  audio.src = songs[index].file;
+
+  songName.textContent = songs[index].name;
+
+  playlist.value = index;
+
+  progress.value = 0;
+
+
+  // Shared update
+  playhtml.setState({
+    song: index,
+    playing: false,
+    position: 0
+  });
+}
+
+
+
+// Play / pause
+playButton.onclick = () => {
+
+  if(audio.paused) {
+
+    audio.play();
+
+    playhtml.setState({
+      playing:true
+    });
+
+  } else {
+
+    audio.pause();
+
+    playhtml.setState({
+      playing:false
+    });
+
+  }
+
+};
+
+
+// Update button
+audio.onplay = () => {
+  playButton.textContent="⏸";
+};
+
+
+audio.onpause = () => {
+  playButton.textContent="▶";
+};
+
+
+
+// Progress updates
+audio.ontimeupdate = () => {
+
+  if(audio.duration){
+
+    progress.value =
+      (audio.currentTime / audio.duration) * 100;
+
+    current.textContent =
+      formatTime(audio.currentTime);
+
+  }
+
+};
+
+
+// Load duration
+audio.onloadedmetadata = () => {
+
+  duration.textContent =
+    formatTime(audio.duration);
+
+};
+
+
+
+// Seek
+progress.onchange = () => {
+
+  if(audio.duration){
+
+    audio.currentTime =
+      (progress.value / 100) * audio.duration;
+
+
+    playhtml.setState({
+      position: audio.currentTime
+    });
+
+  }
+
+};
+
+
+
+// Playlist selection
+playlist.onchange = () => {
+
+  loadSong(Number(playlist.value));
+
+};
+
+
+
+// Previous
+document.getElementById("previous").onclick = () => {
+
+  let next =
+    (currentSong - 1 + songs.length)
+    % songs.length;
+
+  loadSong(next);
+
+};
+
+
+// Next
+document.getElementById("next").onclick = () => {
+
+  let next =
+    (currentSong + 1)
+    % songs.length;
+
+  loadSong(next);
+
+};
+
+
+
+// Receive shared state
+playhtml.onStateChange((state)=>{
+
+
+  if(state.song !== undefined &&
+     state.song !== currentSong){
+
+    currentSong = state.song;
+
+    audio.src =
+      songs[state.song].file;
+
+    songName.textContent =
+      songs[state.song].name;
+
+    playlist.value =
+      state.song;
+
+  }
+
+
+  if(state.position !== undefined){
+
+    audio.currentTime =
+      state.position;
+
+  }
+
+
+  if(state.playing &&
+     audio.paused){
+
+    audio.play();
+
+  }
+
+
+  if(!state.playing &&
+      !audio.paused){
+
+    audio.pause();
+
+  }
+
+});
+
+
+
+// Start
+loadSong(0);
+
+</script>
+
+</body>
+</html>
