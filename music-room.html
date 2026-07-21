@@ -19,9 +19,27 @@
     <!-- The website stylesheet -->
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body can-toggle>
+  <body>
 
-    
+    <canvas id="bgCanvas" can-canvas></canvas>
+
+  
+<div class="background-art">
+    <img src="images/record.png" can-spin id="record-1" class="floating-record">
+    <img src="images/record.png" can-spin id="record-2" class="floating-record">
+    <img src="images/record.png" can-spin id="record-3" class="floating-record">
+    <img src="images/record.png" can-spin id="record-4" class="floating-record">
+</div>
+
+<!--   <img
+          src="images/record.png"
+          class="illustration"
+          alt="Editor illustration"
+          title="Click the image!"
+             id="illustration"
+             can-spin
+        /> -->
+
     <!--
       The body includes the content you see in the page
       Each element is defined using tags, like this <div></div>
@@ -31,14 +49,9 @@
       <div class="content" role="main">
 
         <h1 class="title" id="title"><span contenteditable="true" can-mirror class="editable-text"> Efkar </span>Music Room</h1>
-                <img
-          src="images/record.png"
-          class="illustration"
-          alt="Editor illustration"
-          title="Click the image!"
-             id="illustration"
-             can-spin
-        />
+              
+
+        <button id="clearCanvas">Clear Canvas</button>
 
 <!-- <script>
   const text = document.querySelector(".editable-text");

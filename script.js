@@ -18,7 +18,6 @@ if (btn) {
  * PLAYHTML SETUP
  */
 
-
 playhtml.define("can-audio", {
     defaultData: {
         playing: false,
@@ -30,30 +29,40 @@ playhtml.define("can-audio", {
         const button = element.querySelector("#playBtn");
         const status = element.querySelector("#status");
 
-        // Render state
-        if (data.playing) {
-            audio.play();
-            button.textContent = "❚❚";
-            status.textContent = "Playing";
-        } else {
-            audio.pause();
-            button.textContent = "▶";
-            status.textContent = "Paused";
-        }
+        // update UI only
+        button.textContent = data.playing ? "❚❚" : "▶";
+        status.textContent = data.playing ? "Playing" : "Paused";
 
         if (Math.abs(audio.currentTime - data.position) > 0.25) {
             audio.currentTime = data.position;
         }
 
-        // User interaction
-        button.onclick = () => {
-            setData({
-                playing: audio.paused,
-                position: audio.currentTime
-            });
+
+        button.onclick = async () => {
+            if (audio.paused) {
+                try {
+                    await audio.play(); // allowed: user clicked
+
+                    setData({
+                        playing: true,
+                        position: audio.currentTime
+                    });
+
+                } catch (err) {
+                    console.log("Playback blocked:", err);
+                }
+
+            } else {
+                audio.pause();
+
+                setData({
+                    playing: false,
+                    position: audio.currentTime
+                });
+            }
         };
 
-        // Keep position synced
+
         audio.ontimeupdate = () => {
             if (!audio.paused) {
                 setData({
@@ -62,8 +71,15 @@ playhtml.define("can-audio", {
                 });
             }
         };
+
+
+        // sync pause from other users
+        if (!data.playing && !audio.paused) {
+            audio.pause();
+        }
     }
 });
+
 
 
   const zone = document.getElementById('hover-zone');
@@ -107,17 +123,19 @@ playhtml.define("can-audio", {
 
 
 
-const canvas = document.getElementById("bgCanvas");
-const ctx = canvas.getContext("2d");
+const COLORS = [
+    "#ff595e",
+    "#ffca3a",
+    "#8ac926",
+    "#1982c4",
+    "#6a4c93",
+    "#f15bb5",
+    "#00bbf9",
+    "#00f5d4"
+];
 
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
 
-resize();
-window.addEventListener("resize", resize);
-
+const myColor = COLORS[Math.floor(Math.random() * COLORS.length)];
 
 playhtml.define("can-canvas", {
     defaultData: {
@@ -125,68 +143,38 @@ playhtml.define("can-canvas", {
     },
 
     view({ element, data, setData }) {
+      console.log(element);
+console.log(element.tagName);
+
+
         const canvas = element;
         const ctx = canvas.getContext("2d");
 
-        let drawing = false;
-        let currentStroke = [];
+        function resize() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            redraw(data.strokes);
+        }
 
-        canvas.onpointerdown = e => {
-            drawing = true;
-            currentStroke = [
-                {
-                    x: e.offsetX,
-                    y: e.offsetY
-                }
-            ];
-        };
-
-        canvas.onpointermove = e => {
-            if (!drawing) return;
-
-            currentStroke.push({
-                x: e.offsetX,
-                y: e.offsetY
-            });
-
-            redraw(data.strokes.concat([currentStroke]));
-        };
-
-        canvas.onpointerup = () => {
-            if (!drawing) return;
-
-            drawing = false;
-
-            setData({
-                strokes: [
-                    ...data.strokes,
-                    currentStroke
-                ]
-            });
-        };
-
+        resize();
+        addEventListener("resize", resize);
 
         function redraw(strokes) {
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 4;
-            ctx.lineCap = "round";
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (const stroke of strokes) {
+                ctx.strokeStyle = stroke.color;
+                ctx.lineWidth = 5;
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+
                 ctx.beginPath();
 
-                stroke.forEach((point, i) => {
-                    if (i === 0) {
-                        ctx.moveTo(point.x, point.y);
-                    } else {
-                        ctx.lineTo(point.x, point.y);
-                    }
+                stroke.points.forEach((p, i) => {
+                    if (i === 0)
+                        ctx.moveTo(p.x, p.y);
+                    else
+                        ctx.lineTo(p.x, p.y);
                 });
 
                 ctx.stroke();
@@ -194,8 +182,57 @@ playhtml.define("can-canvas", {
         }
 
         redraw(data.strokes);
+
+        let drawing = false;
+        let current = null;
+
+        canvas.onpointerdown = e => {
+            drawing = true;
+
+            current = {
+                color: myColor,
+                points: [{
+                    x: e.offsetX,
+                    y: e.offsetY
+                }]
+            };
+        };
+
+        canvas.onpointermove = e => {
+            if (!drawing) return;
+
+            current.points.push({
+                x: e.offsetX,
+                y: e.offsetY
+            });
+
+            redraw([...data.strokes, current]);
+        };
+
+        canvas.onpointerup = () => {
+            if (!drawing) return;
+            drawing = false;
+
+            setData({
+                strokes: [...data.strokes, current]
+            });
+        };
+
+        const clearButton = document.getElementById("clearCanvas");
+
+if (!clearButton.dataset.bound) {
+    clearButton.dataset.bound = "true";
+
+    clearButton.onclick = () => {
+        setData({
+            strokes: []
+        });
+    };
+}
+
     }
 });
+
 
 
 // button.addEventListener("click", async () => {

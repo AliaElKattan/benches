@@ -100,6 +100,7 @@ body.clicked {
 }
 
 .editable-text {
+    pointer-events: auto;
     --color-1: #ff6b6b;
     --color-2: #4a8cff;
 
@@ -143,6 +144,8 @@ body.clicked {
 }
 
 #hover-zone {
+  margin-top: -2.5%;
+    pointer-events: auto;
   color: white;
   text-align: center;
 }
@@ -165,10 +168,16 @@ canvas {
     position: fixed;
     inset: 0;
     width: 100vw;
-    height: 100vh;
-    z-index: -1;
+    height: 100vh;  
+    cursor: mouse;
+    z-index: 0;
 }
 
+.wrapper {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
 
 .img-toggle:toggled::after {
   margin-left: 40%;
@@ -202,8 +211,48 @@ canvas {
   margin-top: 1em;
 }
 
+#clearCanvas {
+  pointer-events: auto;
+  z-index: 10;
+    margin-top: 2rem;
+    padding: 10px 18px;
+
+    background: #ff5a5f;
+    color: white;
+/*    background: transparent;*/
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+
+    box-shadow: 0 4px 12px rgba(255, 90, 95, 0.3);
+}
+
+#clearCanvas:hover {
+    background: #ff7075;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(255, 90, 95, 0.4);
+}
+
+#clearCanvas:active {
+    transform: translateY(0);
+    background: #e5484d;
+}
+
+
 ####
 .player{
+  margin-top: 1rem;
+  pointer-events: auto;
 /*    display:flex;*/
     align-items:center;
     gap:16px;
@@ -212,6 +261,7 @@ canvas {
     padding:18px 24px;
     border-radius:16px;
     box-shadow:0 8px 30px rgba(0,0,0,.35);
+/*    z-index: 10;*/
 }
 
 #playBtn {
@@ -242,6 +292,7 @@ border-radius: 10px;
 
 /* Very light scaling for our illustration */
 .illustration {
+    pointer-events: auto;
   max-width: 20%;
   max-height: var(--image-max-width);
   margin-top: var(--image-margin);
@@ -253,9 +304,64 @@ border-radius: 10px;
 }
 
 
+.background-art {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+
+.floating-record {
+  pointer-events: auto;
+    position: absolute;
+    width: 180px;
+    animation: float 8s ease-in-out infinite;
+}
+
+
+.floating-record:nth-child(1) {
+    left: 5%;
+    top: 15%;
+    transform: rotate(-20deg);
+}
+
+.floating-record:nth-child(2) {
+    right: 8%;
+    top: 25%;
+    transform: rotate(30deg);
+}
+
+.floating-record:nth-child(3) {
+    left: 15%;
+    bottom: 10%;
+    transform: rotate(15deg);
+}
+
+.floating-record:nth-child(4) {
+    right: 20%;
+    bottom: 15%;
+    transform: rotate(-35deg);
+}
+
+
+@keyframes float {
+    0%,100% {
+        translate: 0 0;
+    }
+
+    50% {
+        translate: 0 -20px;
+    }
+}
+
+
+
 #text-area {
+    pointer-events: auto;
     width: 100%;
-/*    max-width: 200px;*/
+    max-width: 300px;
     min-height: 140px;
 
     padding: 14px 16px;
@@ -281,6 +387,7 @@ border-radius: 10px;
 
 
 .player{
+  pointer-events: auto;
     width:450px;
     height: 75px;
     background:#1d1d1d;
@@ -328,6 +435,9 @@ h2 {
 */
 .dipped {
   transform: translateY(5px);
+}
+#lamp {
+  pointer-events: auto;
 }
 
 #lamp.clicked {
@@ -420,9 +530,7 @@ h2 {
 
 /* can-hover sets [data-playhtml-hover] while anyone on the page is hovering.
    Style that attribute instead of :hover so the effect is shared. */
-#hoverBox {
-  transition: background 0.2s ease, transform 0.2s ease;
-}
+
 
 #hoverBox[data-playhtml-hover] {
   background: blue !important;
