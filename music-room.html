@@ -28,7 +28,7 @@
     <div class="wrapper">
       <div class="content" role="main">
 
-        <h1 class="title" id="title">Efkar Music Room</h1>
+        <h1 class="title" id="title"><span contenteditable="true" can-mirror class="editable-text"> Efkar </span>Music Room</h1>
                 <img
           src="images/record.png"
           class="illustration"
@@ -38,6 +38,24 @@
              can-spin
         />
 
+<!-- <script>
+  const text = document.querySelector(".editable-text");
+
+const colors = [
+    "#ff6b6b",
+    "#ffd93d",
+    "#6cd97e",
+    "#4a8cff",
+    "#b983ff",
+    "#ff8fab"
+];
+
+let index = 0;
+
+setInterval(() => {
+    text.style.color = colors[index];
+    index = (index + 1) % colors.length;
+}, 500);</script> -->
 
 <div class="player" can-audio>
 
