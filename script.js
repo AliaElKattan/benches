@@ -107,6 +107,96 @@ playhtml.define("can-audio", {
 
 
 
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+
+playhtml.define("can-canvas", {
+    defaultData: {
+        strokes: []
+    },
+
+    view({ element, data, setData }) {
+        const canvas = element;
+        const ctx = canvas.getContext("2d");
+
+        let drawing = false;
+        let currentStroke = [];
+
+        canvas.onpointerdown = e => {
+            drawing = true;
+            currentStroke = [
+                {
+                    x: e.offsetX,
+                    y: e.offsetY
+                }
+            ];
+        };
+
+        canvas.onpointermove = e => {
+            if (!drawing) return;
+
+            currentStroke.push({
+                x: e.offsetX,
+                y: e.offsetY
+            });
+
+            redraw(data.strokes.concat([currentStroke]));
+        };
+
+        canvas.onpointerup = () => {
+            if (!drawing) return;
+
+            drawing = false;
+
+            setData({
+                strokes: [
+                    ...data.strokes,
+                    currentStroke
+                ]
+            });
+        };
+
+
+        function redraw(strokes) {
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+
+            for (const stroke of strokes) {
+                ctx.beginPath();
+
+                stroke.forEach((point, i) => {
+                    if (i === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+
+                ctx.stroke();
+            }
+        }
+
+        redraw(data.strokes);
+    }
+});
+
 
 // button.addEventListener("click", async () => {
 //     if (audio.paused) {
